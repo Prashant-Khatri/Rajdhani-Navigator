@@ -1,8 +1,11 @@
+// src/app/page.jsx
 'use client';
 import { useState } from 'react';
 import metroData from '../data/delhiMetro.json';
-import { formatRouteWithColors } from '../utils/formatRoute';
-import RouteDisplay from '../components/RouteDisplay';
+import { formatRouteWithColors } from '@/utils/formatRoute';
+import RouteDisplay from '@/components/RouteDisplay';
+import Navbar from '@/components/Navbar';
+import AutocompleteInput from '@/components/AutocompleteInput';
 
 export default function Page() {
   const stations = Object.keys(metroData).sort();
@@ -17,7 +20,22 @@ export default function Page() {
     setResult(null);
 
     if (!source || !dest) {
-      setError('Select both source and destination');
+      setError('Please select both source and destination');
+      return;
+    }
+
+    if (!stations.includes(source)) {
+      setError('Invalid source station');
+      return;
+    }
+
+    if (!stations.includes(dest)) {
+      setError('Invalid destination station');
+      return;
+    }
+
+    if (source === dest) {
+      setError('Source and destination cannot be the same');
       return;
     }
 
@@ -51,41 +69,91 @@ export default function Page() {
     }
   }
 
+  const handleSwap = () => {
+    const temp = source;
+    setSource(dest);
+    setDest(temp);
+  };
+
   return (
-    <main className="min-h-screen p-8">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-2xl font-bold mb-4">Rajdhani Navigator — Delhi Metro Route Finder</h1>
+    <>
+      <Navbar />
+      <main className="min-h-screen bg-gray-50 p-4 md:p-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 className="text-2xl font-bold mb-6 text-gray-800">Find Your Route</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <select className="col-span-1 p-3 border rounded" value={source} onChange={(e) => setSource(e.target.value)}>
-            <option value="">Select Source</option>
-            {stations.map(s => <option key={s} value={s}>{s}</option>)}
-          </select>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <AutocompleteInput
+                value={source}
+                onChange={setSource}
+                options={stations}
+                placeholder="Enter source station"
+                label="Source Station"
+              />
 
-          <select className="col-span-1 p-3 border rounded" value={dest} onChange={(e) => setDest(e.target.value)}>
-            <option value="">Select Destination</option>
-            {stations.map(s => <option key={s} value={s}>{s}</option>)}
-          </select>
+              <AutocompleteInput
+                value={dest}
+                onChange={setDest}
+                options={stations}
+                placeholder="Enter destination station"
+                label="Destination Station"
+              />
+            </div>
 
-          <button className="col-span-1 bg-blue-600 text-white rounded p-3" onClick={handleSearch} disabled={loading}>
-            {loading ? 'Searching...' : 'Find Route'}
-          </button>
-        </div>
+            <div className="flex gap-3">
+              <button
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg p-3 font-medium transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                onClick={handleSearch}
+                disabled={loading}
+              >
+                {loading ? 'Searching...' : 'Find Route'}
+              </button>
+              <button
+                className="px-6 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium transition-colors"
+                onClick={handleSwap}
+                disabled={loading}
+              >
+                ⇄ Swap
+              </button>
+            </div>
 
-        {error && <div className="mt-4 text-red-600">{error}</div>}
-
-        {result && !result.error && (
-          <div className="mt-6 p-4 border rounded bg-gray-50">
-            <div className="text-sm text-gray-600">Total stations: {result.totalStations}</div>
-
-            <RouteDisplay stops={result.stops} />
-
-            {result.interchanges.length > 0 && (
-              <div className="mt-4 text-yellow-800">Interchanges: {result.interchanges.join(', ')}</div>
+            {error && (
+              <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+                {error}
+              </div>
             )}
           </div>
-        )}
-      </div>
-    </main>
+
+          {result && !result.error && (
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="flex items-center justify-between mb-6 pb-4 border-b">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-800">Route Details</h3>
+                  <p className="text-gray-600 mt-1">
+                    Total Stations: <span className="font-semibold">{result.totalStations}</span>
+                  </p>
+                </div>
+                {result.interchanges.length > 0 && (
+                  <div className="text-right">
+                    <p className="text-sm text-gray-600">Interchanges</p>
+                    <p className="font-semibold text-orange-600">{result.interchanges.length}</p>
+                  </div>
+                )}
+              </div>
+
+              <RouteDisplay stops={result.stops} />
+
+              {result.interchanges.length > 0 && (
+                <div className="mt-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                  <p className="font-semibold text-orange-800 mb-2">Interchange Stations:</p>
+                  <p className="text-orange-700">{result.interchanges.join(', ')}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </main>
+    </>
   );
 }

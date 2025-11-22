@@ -1,24 +1,18 @@
 export default function RouteDisplay({ stops }) {
-  if (!stops || stops.length === 0) return null;
-
   return (
-    <div className="mt-6 space-y-3">
-      {stops.map((s) => (
+    <div className="mt-4 space-y-3">
+      {stops.map((stop, i) => (
         <div
-          key={s.station}
-          className={`p-3 rounded-md flex items-center justify-between ${s.interchange ? 'bg-yellow-50' : 'bg-white'}`}
-          style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}
+          key={i}
+          className={`flex items-center justify-between p-3 rounded-lg shadow-sm border-l-8`}
+          style={{ borderColor: stop.color }}
         >
-          <div className="flex items-center gap-3">
-            <div style={{ width: 14, height: 14, borderRadius: 4, background: s.color }} />
-            <div>
-              <div className="font-semibold">{s.station}</div>
-              <div className="text-sm text-gray-500">{s.lines.join(', ')} Line</div>
-            </div>
-          </div>
+          <span className="font-semibold">{stop.station}</span>
 
-          {s.interchange && (
-            <div className="text-sm text-red-600">Interchange</div>
+          {stop.interchange && (
+            <span className="px-3 py-1 bg-yellow-400 text-black text-xs font-bold rounded-full">
+              Interchange
+            </span>
           )}
         </div>
       ))}
