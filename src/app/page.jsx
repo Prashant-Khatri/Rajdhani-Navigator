@@ -59,8 +59,7 @@ export default function Page() {
       setResult({
         path,
         stops,
-        totalStations: path.length - 1,
-        interchanges: stops.filter(s => s.interchange).map(s => s.station),
+        totalStations: path.length - 1
       });
     } catch (e) {
       setError('Failed to fetch route: ' + e.message);
@@ -134,22 +133,9 @@ export default function Page() {
                     Total Stations: <span className="font-semibold">{result.totalStations}</span>
                   </p>
                 </div>
-                {result.interchanges.length > 0 && (
-                  <div className="text-right">
-                    <p className="text-sm text-gray-600">Interchanges</p>
-                    <p className="font-semibold text-orange-600">{result.interchanges.length}</p>
-                  </div>
-                )}
               </div>
 
               <RouteDisplay stops={result.stops} />
-
-              {result.interchanges.length > 0 && (
-                <div className="mt-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
-                  <p className="font-semibold text-orange-800 mb-2">Interchange Stations:</p>
-                  <p className="text-orange-700">{result.interchanges.join(', ')}</p>
-                </div>
-              )}
             </div>
           )}
         </div>

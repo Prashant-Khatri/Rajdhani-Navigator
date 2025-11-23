@@ -16,15 +16,10 @@ export function formatRouteWithColors(path, metroData) {
     const lines = (metroData[station]?.lineColors) || [];
     const colorKey = lines[0] || "Yellow";
     const color = LINE_COLOR_MAP[colorKey] || "#cccccc";
-    const prev = path[idx - 1];
-    const prevLines = prev ? (metroData[prev].lineColors || []) : [];
-    const isInterchange = prev && !lines.some(l => prevLines.includes(l));
 
     return {
       station,
-      lines,
-      color,
-      interchange: !!isInterchange,
+      color
     };
   });
 }

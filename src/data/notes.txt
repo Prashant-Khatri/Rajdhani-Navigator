@@ -1,0 +1,6 @@
+Data : Object{
+    stationName : {
+        connections : [Array of stations(string)],
+        lineColors : [Array of color(string)]
+    }
+}

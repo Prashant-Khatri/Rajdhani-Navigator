@@ -8,12 +8,6 @@ export default function RouteDisplay({ stops }) {
           style={{ borderColor: stop.color }}
         >
           <span className="font-semibold">{stop.station}</span>
-
-          {stop.interchange && (
-            <span className="px-3 py-1 bg-yellow-400 text-black text-xs font-bold rounded-full">
-              Interchange
-            </span>
-          )}
         </div>
       ))}
     </div>
